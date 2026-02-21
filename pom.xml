@@ -6,12 +6,12 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.4.2</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <relativePath/> 
   </parent>
-  <groupId>com-JD-microservice-APP</groupId>
-  <artifactId>com-JD-microservice-APP</artifactId>
+  <groupId>com-jd-microservice-app</groupId>
+  <artifactId>com-jd-microservice-app</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <packaging>pom</packaging> <!-- THIS IS THE IMPORTANT PART -->
+  <packaging>pom</packaging> 
   <properties>
     <java.version>21</java.version>
     <spring-cloud.version>2024.0.0</spring-cloud.version>
@@ -27,4 +27,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <modules>
+    <module>com-jd-microservice-discoveryServer</module>
+  </modules>
 </project>
