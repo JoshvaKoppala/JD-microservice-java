@@ -1,0 +1,83 @@
+# Microservices Architecture: Learning Journey
+
+## 1. Parent Project (The Orchestrator)
+The Parent POM manages versions and shared configuration across all microservices.
+
+- **Primary Role**: specify global versions (Java, Spring Boot, Spring Cloud).
+- **Project Identity**:
+    - **Group Id**: `com-jd-microservice-app`
+    - **Artifact Id**: `com-jd-microservice-app`
+    - **Packaging**: `pom` (indicates this is a non-runnable container project).
+- **Modules**: Lists all sub-projects (e.g., `com-jd-microservice-discoveryServer`).
+
+---
+
+## 2. Discovery Server (The Phonebook)
+Allows services to find each other dynamically without hardcoded URLs.
+
+- **Step A: POM Configuration**
+    - Inherits from the Parent POM.
+    - **Artifact Id**: `com-jd-microservice-discoveryServer`
+    - **Dependencies**: `spring-cloud-starter-netflix-eureka-server`.
+- **Step B: Application Properties**
+    - **Port**: `8761` (default for Eureka).
+    - **Client Settings**: Disable `register-with-eureka` and `fetch-registry` (since this is the server itself).
+- **Step C: Main Application**
+    - Annotations: `@SpringBootApplication`, `@EnableEurekaServer`.
+
+**Run Command**: 
+`mvn spring-boot:run -pl com-jd-microservice-discoveryServer`
+
+--- [x] Step 3: Create API Gateway (The Front Door)
+The single entry point for all client requests.
+
+- **Step A: POM Configuration**
+    - Inherits from the Parent POM.
+    - **Artifact Id**: `com-jd-microservice-api-gateway`
+    - **Dependencies**: `spring-cloud-starter-gateway`, `spring-cloud-starter-netflix-eureka-client`.
+- **Step B: Configuration**
+    - **Port**: `8080`.
+    - **Discovery**: `spring.cloud.gateway.discovery.locator.enabled=true` (allows automatic routing via service names).
+- **Step C: Main Application**
+    - **Note**: For Spring Boot 3+, use `@EnableDiscoveryClient` instead of the old `@EnableEurekaClient`.
+
+**Run Command**:
+`mvn spring-boot:run -pl com-jd-microservice-api-gateway`
+
+---
+
+> [!NOTE]
+> **Maven Concept: Dependency Management**
+> We use `<dependencyManagement>` in the Parent POM as a **Version Catalog**. 
+> - It does NOT force every service to use Postgres.
+> - It simply says: "IF a service wants to use Postgres, it should use version X." 
+> - This keeps our services flexible (Service A can use Postgres, Service B can use Oracle) but keeps our versions organized in one place.
+
+---
+
+---
+
+## 4. [ ] Step 4: Inventory Service (The Data Worker)
+This service manages product stock. It introduces persistent storage and REST APIs.
+
+- **Step A: POM Configuration**
+    - **Artifact**: `com-jd-microservice-inventory-service`
+    - **New Dependencies**: 
+        - `spring-boot-starter-data-jpa`
+        - `spring-boot-starter-web`
+        - `org.postgresql:postgresql` (Postgres Driver)
+        - `org.projectlombok:lombok` (Note: for Java 21+ compatibility, ensure lombok version is 1.18.30+)
+- **Step B: Properties (`application.properties`)**
+    - **Spring Data**: 
+        ```properties
+        spring.datasource.url=jdbc:postgresql://localhost:5432/inventory_service
+        spring.datasource.username=postgres
+        spring.datasource.password=postgres
+        spring.jpa.hibernate.ddl-auto=update
+        spring.jpa.show-sql=true
+        ```
+    - **Eureka**: Register as usual (`inventory-service`).
+- **Step C: Model & API**
+    - **Entity**: `Inventory` (id, skuCode, count).
+    - **Repository**: `JpaRepository` interface.
+    - **Controller**: Endpoint `GET /api/inventory` to check stock.

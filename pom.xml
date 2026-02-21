@@ -25,9 +25,16 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <scope>runtime</scope>
+</dependency>
     </dependencies>
   </dependencyManagement>
   <modules>
     <module>com-jd-microservice-discoveryServer</module>
+    <module>com-jd-microservice-api-gateway</module>
+    <module>com-jd-microservice-inventory-service</module>
   </modules>
 </project>
