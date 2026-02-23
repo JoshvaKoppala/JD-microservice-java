@@ -1,11 +1,19 @@
 <configuration>
+    <!-- Pull the app name from Spring environment BEFORE patterns are evaluated -->
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder><pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [${spring.application.name}, %X{traceId}, %X{spanId}] - %msg%n</pattern></encoder>
+        <encoder><pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [${appName}, %X{traceId}, %X{spanId}] - %msg%n</pattern></encoder>
+    </appender>
+
+    <appender name="APP_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application.log</file>
+        <encoder><pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [${appName}, %X{traceId}, %X{spanId}] - %msg%n</pattern></encoder>
     </appender>
 
     <appender name="PERFORMANCE" class="ch.qos.logback.core.FileAppender">
         <file>logs/performance.log</file>
-        <encoder><pattern>%d [${spring.application.name}, %X{traceId}] %msg%n</pattern></encoder>
+        <encoder><pattern>%d [${appName}, %X{traceId}] %msg%n</pattern></encoder>
     </appender>
 
     <logger name="com.jd.performance" level="INFO" additivity="false">
@@ -14,5 +22,6 @@
 
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
+        <appender-ref ref="APP_FILE" />
     </root>
 </configuration>
